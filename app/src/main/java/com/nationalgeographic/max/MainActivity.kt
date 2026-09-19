@@ -77,10 +77,10 @@ class MainActivity : ComponentActivity() {
                 val post = posts.getJSONObject(i)
 
                 addPost(
-                    feed = feed,
-                    date = post.optString("date"),
-                    title = post.optString("title"),
-                    text = post.optString("text")
+                    feed,
+                    post.optString("date"),
+                    post.optString("title"),
+                    post.optString("text")
                 )
             }
 
@@ -102,7 +102,7 @@ class MainActivity : ComponentActivity() {
         }
 
         val image = ImageView(this).apply {
-            setImageResource(R.drawable.post_placeholder)
+            setBackgroundColor(Color.rgb(30, 30, 30))
             scaleType = ImageView.ScaleType.CENTER_CROP
             contentDescription = "Фото публикации"
         }
