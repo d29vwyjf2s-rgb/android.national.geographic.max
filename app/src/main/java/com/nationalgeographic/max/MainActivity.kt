@@ -102,7 +102,7 @@ class MainActivity : ComponentActivity() {
         }
 
         val image = ImageView(this).apply {
-            setBackgroundResource(R.drawable.post_placeholder)
+            setImageResource(R.drawable.post_placeholder)
             scaleType = ImageView.ScaleType.CENTER_CROP
             contentDescription = "Фото публикации"
         }
