@@ -4,14 +4,13 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
-import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.activity.ComponentActivity
+import org.json.JSONObject
 
 class MainActivity : ComponentActivity() {
 
@@ -41,35 +40,14 @@ class MainActivity : ComponentActivity() {
 
         root.addView(header)
 
-        val scroll = ScrollView(this).apply {
-            isFillViewport = true
-        }
+        val scroll = ScrollView(this)
 
         val feed = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(16, 0, 16, 30)
         }
 
-        addPost(
-            feed,
-            "19 СЕНТЯБРЯ 2026",
-            "Места, которые хочется увидеть своими глазами",
-            "Открываем удивительные места нашей планеты, необычные природные явления и истории, которыми хочется поделиться."
-        )
-
-        addPost(
-            feed,
-            "18 СЕНТЯБРЯ 2026",
-            "Там, где природа показывает свою силу",
-            "Горы, океаны, леса и другие удивительные уголки Земли."
-        )
-
-        addPost(
-            feed,
-            "17 СЕНТЯБРЯ 2026",
-            "Дикая природа крупным планом",
-            "Невероятные животные и редкие моменты из жизни нашей планеты."
-        )
+        loadPosts(feed)
 
         scroll.addView(feed)
 
@@ -85,11 +63,37 @@ class MainActivity : ComponentActivity() {
         setContentView(root)
     }
 
+    private fun loadPosts(feed: LinearLayout) {
+        try {
+            val jsonText = assets
+                .open("posts.json")
+                .bufferedReader()
+                .use { it.readText() }
+
+            val root = JSONObject(jsonText)
+            val posts = root.getJSONArray("posts")
+
+            for (i in 0 until posts.length()) {
+                val post = posts.getJSONObject(i)
+
+                addPost(
+                    feed = feed,
+                    date = post.optString("date"),
+                    title = post.optString("title"),
+                    text = post.optString("text")
+                )
+            }
+
+        } catch (e: Exception) {
+            addError(feed, "Не удалось загрузить публикации")
+        }
+    }
+
     private fun addPost(
         feed: LinearLayout,
         date: String,
-        titleText: String,
-        descriptionText: String
+        title: String,
+        text: String
     ) {
         val post = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -98,7 +102,7 @@ class MainActivity : ComponentActivity() {
         }
 
         val image = ImageView(this).apply {
-            setBackgroundResource(com.nationalgeographic.max.R.drawable.post_placeholder)
+            setBackgroundResource(R.drawable.post_placeholder)
             scaleType = ImageView.ScaleType.CENTER_CROP
             contentDescription = "Фото публикации"
         }
@@ -112,7 +116,7 @@ class MainActivity : ComponentActivity() {
         )
 
         val dateView = TextView(this).apply {
-            text = date
+            this.text = date
             textSize = 12f
             setTextColor(yellow)
             typeface = Typeface.DEFAULT_BOLD
@@ -121,42 +125,24 @@ class MainActivity : ComponentActivity() {
 
         post.addView(dateView)
 
-        val title = TextView(this).apply {
-            text = titleText
+        val titleView = TextView(this).apply {
+            this.text = title
             textSize = 22f
             setTextColor(white)
             typeface = Typeface.DEFAULT_BOLD
             setPadding(0, 0, 0, 10)
         }
 
-        post.addView(title)
+        post.addView(titleView)
 
-        val description = TextView(this).apply {
-            text = descriptionText
+        val textView = TextView(this).apply {
+            this.text = text
             textSize = 15f
             setTextColor(gray)
             setLineSpacing(0f, 1.15f)
         }
 
-        post.addView(description)
-
-        val maxButton = Button(this).apply {
-            text = "ОТКРЫТЬ В MAX"
-            textSize = 13f
-            setTextColor(Color.BLACK)
-            setBackgroundColor(yellow)
-            typeface = Typeface.DEFAULT_BOLD
-        }
-
-        post.addView(
-            maxButton,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                50
-            ).apply {
-                topMargin = 16
-            }
-        )
+        post.addView(textView)
 
         feed.addView(
             post,
@@ -167,5 +153,20 @@ class MainActivity : ComponentActivity() {
                 bottomMargin = 18
             }
         )
+    }
+
+    private fun addError(
+        feed: LinearLayout,
+        message: String
+    ) {
+        val error = TextView(this).apply {
+            text = message
+            textSize = 16f
+            setTextColor(Color.RED)
+            gravity = Gravity.CENTER
+            setPadding(20, 50, 20, 50)
+        }
+
+        feed.addView(error)
     }
 }
