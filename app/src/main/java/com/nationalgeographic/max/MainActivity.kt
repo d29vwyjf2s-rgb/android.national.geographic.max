@@ -4,10 +4,12 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 
@@ -25,40 +27,83 @@ class MainActivity : ComponentActivity() {
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(background)
-            setPadding(24, 20, 24, 24)
         }
 
         val header = TextView(this).apply {
             text = "NATIONAL GEOGRAPHIC"
-            textSize = 22f
+            textSize = 21f
             setTextColor(white)
             typeface = Typeface.DEFAULT_BOLD
             letterSpacing = 0.08f
             gravity = Gravity.CENTER
-            setPadding(0, 10, 0, 24)
+            setPadding(16, 25, 16, 20)
         }
 
+        root.addView(header)
+
+        val scroll = ScrollView(this).apply {
+            isFillViewport = true
+        }
+
+        val feed = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(16, 0, 16, 30)
+        }
+
+        addPost(
+            feed,
+            "19 СЕНТЯБРЯ 2026",
+            "Места, которые хочется увидеть своими глазами",
+            "Открываем удивительные места нашей планеты, необычные природные явления и истории, которыми хочется поделиться."
+        )
+
+        addPost(
+            feed,
+            "18 СЕНТЯБРЯ 2026",
+            "Там, где природа показывает свою силу",
+            "Горы, океаны, леса и другие удивительные уголки Земли."
+        )
+
+        addPost(
+            feed,
+            "17 СЕНТЯБРЯ 2026",
+            "Дикая природа крупным планом",
+            "Невероятные животные и редкие моменты из жизни нашей планеты."
+        )
+
+        scroll.addView(feed)
+
         root.addView(
-            header,
+            scroll,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
+                0,
+                1f
             )
         )
 
-        val postCard = LinearLayout(this).apply {
+        setContentView(root)
+    }
+
+    private fun addPost(
+        feed: LinearLayout,
+        date: String,
+        titleText: String,
+        descriptionText: String
+    ) {
+        val post = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(card)
-            setPadding(18, 18, 18, 18)
+            setPadding(16, 16, 16, 16)
         }
 
         val image = ImageView(this).apply {
-            setBackgroundColor(Color.rgb(35, 35, 35))
+            setBackgroundResource(com.nationalgeographic.max.R.drawable.post_placeholder)
             scaleType = ImageView.ScaleType.CENTER_CROP
-            contentDescription = "Изображение публикации"
+            contentDescription = "Фото публикации"
         }
 
-        postCard.addView(
+        post.addView(
             image,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -66,70 +111,61 @@ class MainActivity : ComponentActivity() {
             )
         )
 
-        val date = TextView(this).apply {
-            text = "19 СЕНТЯБРЯ 2026"
+        val dateView = TextView(this).apply {
+            text = date
             textSize = 12f
             setTextColor(yellow)
             typeface = Typeface.DEFAULT_BOLD
-            setPadding(0, 18, 0, 8)
+            setPadding(0, 16, 0, 8)
         }
 
-        postCard.addView(date)
+        post.addView(dateView)
 
         val title = TextView(this).apply {
-            text = "Места, которые хочется увидеть своими глазами"
-            textSize = 23f
+            text = titleText
+            textSize = 22f
             setTextColor(white)
             typeface = Typeface.DEFAULT_BOLD
-            setPadding(0, 0, 0, 12)
+            setPadding(0, 0, 0, 10)
         }
 
-        postCard.addView(title)
+        post.addView(title)
 
         val description = TextView(this).apply {
-            text = "Открываем удивительные места нашей планеты, необычные природные явления и истории, которыми хочется поделиться."
-            textSize = 16f
+            text = descriptionText
+            textSize = 15f
             setTextColor(gray)
             setLineSpacing(0f, 1.15f)
-            setPadding(0, 0, 0, 18)
         }
 
-        postCard.addView(description)
+        post.addView(description)
 
         val maxButton = Button(this).apply {
             text = "ОТКРЫТЬ В MAX"
-            textSize = 14f
+            textSize = 13f
             setTextColor(Color.BLACK)
             setBackgroundColor(yellow)
             typeface = Typeface.DEFAULT_BOLD
         }
 
-        postCard.addView(
+        post.addView(
             maxButton,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                52
-            )
+                50
+            ).apply {
+                topMargin = 16
+            }
         )
 
-        root.addView(
-            postCard,
+        feed.addView(
+            post,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
-            )
+            ).apply {
+                bottomMargin = 18
+            }
         )
-
-        val source = TextView(this).apply {
-            text = "NATIONAL GEOGRAPHIC • MAX"
-            textSize = 11f
-            setTextColor(Color.DKGRAY)
-            gravity = Gravity.CENTER
-            setPadding(0, 20, 0, 0)
-        }
-
-        root.addView(source)
-
-        setContentView(root)
     }
 }
